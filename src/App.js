@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Color from "./Color";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
@@ -6,6 +6,13 @@ import _ from "lodash";
 
 function App() {
   const [brightness, setBrightness] = useState(50);
+
+  const changeBri = (value) => {
+    setBrightness(value);
+    console.log(value);
+  };
+
+  const throttle = useMemo(() => _.throttle(changeBri, 100), []);
 
   useEffect(() => {
     fetch(
@@ -31,22 +38,11 @@ function App() {
     );
   }, []);
 
-  const changeBri = (value) => {
-    setBrightness(value);
-    console.log(value);
-  };
-
   return (
     <div className="App">
       <Color r="0" g="255" b="255" />
       <Color r="148" g="0" b="211" />
-      <Slider
-        defaultValue={brightness}
-        onChange={(value) => {
-          setBrightness(value);
-          console.log(value);
-        }}
-      />
+      <Slider defaultValue={brightness} onChange={throttle} />
     </div>
   );
 }
